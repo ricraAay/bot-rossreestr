@@ -3,36 +3,33 @@ import BotConstants from './constants.js';
 
 export default class BotService {
 
-  DELAY = BotConstants.DELAY;
-  STATUS = BotConstants.STATUS_CODE;
+  CONSTANTS = BotConstants;
   UTILS = BotUtils;
 
   constructor (context) {
     this.context = context;
+    this.DELAY = this.CONSTANTS.DELAY.MIN_DELAY;
+    this.IS_FIRST_LOOP = true;
   }
 
   execute (url) {
-    let delay = this.DELAY.MIN_DELAY;
-    let isFirstLoop = true;
 
-    this.context.reply(`Готовим запрос для проверки доступа к сайту 👨‍💻\nПодождите ${delay / 1000} сек.`);
+    this.context.reply(`Готовим запрос для проверки доступа к сайту 👨‍💻\nПодождите ${this.DELAY / 1000} сек.`);
 
     this.UTILS.startTimer(async (timerId) => {
       const statusCode = await this.UTILS.checkedStatusCode(url);
 
-      if (statusCode !== this.STATUS.ERROR) {
-        this.context.reply(`Сайт ${ url } снова доступен 🥳`);
-        clearInterval(timerId);
-        return;
+      if (statusCode !== this.CONSTANTS.STATUS_CODE.ERROR) {
+        this.context.reply(`Сайт снова доступен 🥳\n${ url }`);
+        return clearInterval(timerId);
       }
 
-      if (isFirstLoop) {
-        this.context.reply(`Сайт ${ url } не доступен 😡\nСообщим когда появится доступ`);
-        delay = this.DELAY.MAX_DELAY;
+      if (this.IS_FIRST_LOOP) {
+        this.context.reply(`Сайт не доступен 😡\n${ url }\nСообщим когда появится доступ`);
+        this.IS_FIRST_LOOP = false;
+        this.DELAY = this.CONSTANTS.DELAY.MAX_DELAY;
       }
 
-      isFirstLoop = false;
-
-    }, delay)
+    }, this.DELAY)
   }
 }
