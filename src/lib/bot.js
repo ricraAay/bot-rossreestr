@@ -30,6 +30,6 @@ export default class BotService {
         this.DELAY = this.CONSTANTS.DELAY.MAX_DELAY;
       }
 
-    }, this.DELAY)
+    }, this.DELAY);
   }
 }
