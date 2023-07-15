@@ -21,7 +21,8 @@ export default class BotService {
 
       if (statusCode !== this.CONSTANTS.STATUS_CODE.ERROR) {
         this.context.reply(`Сайт снова доступен 🥳\n${ url }`);
-        return clearInterval(timerId);
+        clearInterval(timerId);
+        return;
       }
 
       if (this.IS_FIRST_LOOP) {
